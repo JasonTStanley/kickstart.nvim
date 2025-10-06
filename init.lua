@@ -285,6 +285,21 @@ require('lazy').setup({
       },
     },
   },
+  {
+    'linux-cultist/venv-selector.nvim',
+    dependencies = {
+      'neovim/nvim-lspconfig',
+      { 'nvim-telescope/telescope.nvim', branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } }, -- optional: you can also use fzf-lua, snacks, mini-pick instead.
+    },
+    ft = 'python', -- Load when opening Python files
+    keys = {
+      { ',v', '<cmd>VenvSelect<cr>' }, -- Open picker on keymap
+    },
+    opts = { -- this can be an empty lua table - just showing below for clarity.
+      search = {}, -- if you add your own searches, they go here.
+      options = {}, -- if you add plugin options, they go here.
+    },
+  },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
@@ -353,6 +368,25 @@ require('lazy').setup({
     },
   },
 
+  {
+    'ErickKramer/nvim-ros2',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-treesitter/nvim-treesitter',
+    },
+    opt = {
+      autocmds = true,
+      telescope = true,
+      treesitter = true,
+    },
+    config = function()
+      vim.keymap.set('n', '<leader>li', ':Telescope ros2 interfaces<CR>', { desc = '[ROS 2]: List interfaces' })
+      vim.keymap.set('n', '<leader>ln', ':Telescope ros2 nodes<CR>', { desc = '[ROS 2]: List nodes' })
+      vim.keymap.set('n', '<leader>la', ':Telescope ros2 actions<CR>', { desc = '[ROS 2]: List actions' })
+      vim.keymap.set('n', '<leader>lt', ':Telescope ros2 topics<CR>', { desc = '[ROS 2]: List topics' })
+      vim.keymap.set('n', '<leader>ls', ':Telescope ros2 services<CR>', { desc = '[ROS 2]: List services' })
+    end,
+  },
   -- NOTE: Plugins can specify dependencies.
   --
   -- The dependencies are proper plugin specifications as well - anything
