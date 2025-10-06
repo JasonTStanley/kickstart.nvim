@@ -1,0 +1,95 @@
+alias rosclean="rm -rf build/ install/ log/"
+
+function abspath {
+    if [[ -d "$1" ]]
+    then
+        pushd "$1" >/dev/null
+        pwd
+        popd >/dev/null
+    elif [[ -e "$1" ]]
+    then
+        pushd "$(dirname "$1")" >/dev/null
+        echo "$(pwd)/$(basename "$1")"
+        popd >/dev/null
+    else
+        echo "$1" does not exist! >&2
+        return 127
+    fi
+}
+
+function rosvenv_create() {
+    # Usage: rosvenv_create venv_name (default venv) path/to/package (default current directory)
+    VENV_NAME=${1:-venv}
+    PACKAGE_PATH=${2:-$(pwd)}
+    if [ ! -d "$PACKAGE_PATH" ]; then
+        echo "Directory '$PACKAGE_PATH' does not exist."
+        return 1
+    fi
+    WRAPUP_TEXT="Virtual environment created at '$PACKAGE_PATH/$VENV_NAME'. Activate it with:\nsource $PACKAGE_PATH/$VENV_NAME/bin/activate\n or use:\nrosvenv $PACKAGE_PATH' to source the venv and ROS setup.bash" 
+    VENV_ARGS="--system-site-packages --symlinks"
+    #use virtualenv 
+    if command -v virtualenv &> /dev/null; then
+        virtualenv -p python3 "$PACKAGE_PATH/$VENV_NAME" $VENV_ARGS
+        echo $WRAPUP_TEXT
+        return 0
+    else
+        echo "virtualenv not found, falling back to python3 -m venv"
+    fi
+
+    python3 -m venv "$PACKAGE_PATH/$VENV_NAME" $VENV_ARGS
+    echo $WRAPUP_TEXT
+    return 0
+}
+
+function rosvenv() {
+    # Usage: rosvenv path/to/package, defaults to cwd
+    PACKAGE_PATH=${1:-$(pwd)}
+    if [ ! -d "$PACKAGE_PATH" ]; then
+        echo "Directory '$PACKAGE_PATH' does not exist."
+        return 1
+    fi
+    if [ ! -d "$PACKAGE_PATH" ]; then
+        echo "Directory '$PACKAGE_PATH' does not exist."
+        return 1
+    fi
+    #first source the virtual environment if it exists (look for a folder with bin/activate in it)
+    VENV_ACTIVATE=$(find "$PACKAGE_PATH" -maxdepth 3 -type f -name "activate" -path "*/bin/activate" | head -n 1)    
+    #warn and fail if one is not found
+    if [ -z "$VENV_ACTIVATE" ]; then
+        echo "No virtual environment found in '$PACKAGE_PATH'. Consider Creating one with rosvenv_create."
+        return 1
+    fi
+
+    if [ -n "$VENV_ACTIVATE" ]; then
+        source "$VENV_ACTIVATE"
+    fi
+
+    #add the venv site packages to the PYTHONPATH
+    VENV_PARENT_DIR=$(abspath "$(dirname "$VENV_ACTIVATE")" | xargs dirname)
+    PYTHON_VERSION=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+    VENV_SITE_PACKAGES="$VENV_PARENT_DIR/lib/python$PYTHON_VERSION/site-packages"
+    if [[ ":$PYTHONPATH:" != *":$VENV_SITE_PACKAGES:"* ]]; then
+        export PYTHONPATH="$PYTHONPATH:$VENV_SITE_PACKAGES" 
+    fi
+    
+    #source the ROS setup.bash if it exists
+    #check if ROS_DISTRO is set, if not, warn and default to 'jazzy'
+    if [ -z "$ROS_DISTRO" ]; then
+        echo "ROS_DISTRO is not set. Defaulting to 'jazzy'."
+        ROS_DISTRO="jazzy"
+    fi
+
+    if [ -f "/opt/ros/$ROS_DISTRO/setup.bash" ]; then
+        source /opt/ros/$ROS_DISTRO/setup.bash
+    else
+        echo "ROS distribution '$ROS_DISTRO' not found in /opt/ros/"
+
+    fi
+    #source the package's setup.bash if it exists
+    if [ -f "$PACKAGE_PATH/install/setup.bash" ]; then
+        source "$PACKAGE_PATH/install/setup.bash"
+    else
+        echo "No setup.bash found in '$PACKAGE_PATH/install/'. Did you build the package?"
+    fi
+
+}

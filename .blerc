@@ -1,0 +1,49 @@
+ble-bind -m auto_complete -f S-TAB auto_complete/insert
+#ble-bind -m auto_complete -f C-i auto_complete/insert
+
+###############################################################################
+# from the README
+# https://github.com/akinomyoga/ble.sh?tab=readme-ov-file#22-disable-features
+###############################################################################
+# Disable syntax highlighting
+bleopt highlight_syntax=
+
+# Disable highlighting based on filenames
+bleopt highlight_filename=
+
+# Disable highlighting based on variable types
+bleopt highlight_variable=
+
+# Tip: you may instead specify the delay of auto-complete in millisecond
+bleopt complete_auto_delay=100
+
+# Disable ambiguous completion
+bleopt complete_ambiguous=
+
+# Disable menu-complete by TAB
+bleopt complete_menu_complete=
+
+# Disable menu filtering (Note: auto-complete is enabled by default in bash-4.0+)
+bleopt complete_menu_filter=
+
+# Disable EOF marker like "[ble: EOF]"
+bleopt prompt_eol_mark=''
+
+# Disable error exit marker like "[ble: exit %d]"
+bleopt exec_errexit_mark=
+
+# Disable exit marker like "[ble: exit]"
+bleopt exec_exit_mark=
+
+# Disable some other markers like "[ble: ...]"
+bleopt edit_marker=
+bleopt edit_marker_error=#
+
+###############################################################################
+# from the Wiki
+# https://github.com/akinomyoga/ble.sh/wiki/Q&A#completions
+# How to change the color of suggestions of auto-complete?
+###############################################################################
+
+# a more subtle color for auto-completion
+ble-face auto_complete='fg=240,underline,italic'
