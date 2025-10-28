@@ -773,6 +773,8 @@ require('lazy').setup({
         'stylua', -- Used to format Lua code
         'prettier',
         'clang-format',
+        'black',
+        'isort',
         'cueimports',
         'cpplint',
         'cuelsp',
@@ -831,6 +833,7 @@ require('lazy').setup({
         lua = { 'stylua' },
         c = { { exe = 'clang-format', args = { '--style=Google' } } },
         cpp = { { exe = 'clang-format', args = { '--style=Google' } } },
+        python = { 'isort', 'black' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
