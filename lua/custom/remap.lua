@@ -74,3 +74,8 @@ vim.schedule(function()
 end)
 
 --vim.keymap.set('i', '<C-y>', 'copilot#Accept("<CR")', { expr = true, silent = true })
+--vim.g.copilot_no_tab_map = true
+--vim.g.copilot_assume_mapped = true
+
+vim.keymap.set('n', '<leader>mr', '<cmd>CellularAutomaton make_it_rain<CR>')
+vim.keymap.set('n', '<leader>gol', '<cmd>CellularAutomaton game_of_life<CR>')
