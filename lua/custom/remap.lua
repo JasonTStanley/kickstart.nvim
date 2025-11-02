@@ -1,4 +1,4 @@
-vim.g.mapleader = " "
+vim.g.mapleader = ' '
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 vim.keymap.set('i', 'jj', '<Esc>')
@@ -68,5 +68,9 @@ vim.keymap.set('n', '<leader>r', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><
 
 -- paste over selection
 vim.keymap.set('x', '<leader>p', [["_dP]], { desc = '[p]aste over' })
+
+vim.schedule(function()
+  vim.o.clipboard = 'unnamedplus'
+end)
 
 --vim.keymap.set('i', '<C-y>', 'copilot#Accept("<CR")', { expr = true, silent = true })
