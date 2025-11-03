@@ -47,7 +47,7 @@ vim.keymap.set({ 'n', 'v' }, '<leader>y', [["+y]], { desc = '[y]ank to system cl
 vim.keymap.set('n', '<leader>Y', [["+Y]], { desc = '[Y]ank to system clipboard' })
 
 -- delete text to void register to preserve yank
-vim.keymap.set({ 'n', 'v' }, '<leader>d', [["_d]])
+vim.keymap.set({ 'n', 'v' }, '<leader>x', [["_d]])
 
 -- the escape key is far away okay...
 vim.keymap.set('i', '<C-c>', '<Esc>')
@@ -79,3 +79,8 @@ end)
 
 vim.keymap.set('n', '<leader>mr', '<cmd>CellularAutomaton make_it_rain<CR>')
 vim.keymap.set('n', '<leader>gol', '<cmd>CellularAutomaton game_of_life<CR>')
+
+vim.keymap.set('n', '<leader>db', '<cmd>lua require("dap").toggle_breakpoint()<CR>', { desc = 'Toggle [D]ebugger [B]reakpoint' })
+vim.keymap.set('n', '<leader>dc', '<cmd>lua require("dap").continue()<CR>', { desc = '[D]ebugger [C]ontinue' })
+vim.keymap.set('n', '<leader>di', '<cmd>lua require("dap").step_into()<CR>', { desc = '[D]ebugger step [I]nto' })
+vim.keymap.set('n', '<leader>do', '<cmd>lua require("dap").step_over()<CR>', { desc = '[D]ebugger step [O]ver' })
