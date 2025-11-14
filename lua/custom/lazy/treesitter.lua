@@ -20,7 +20,7 @@ return {
       auto_install = true,
       indent = {
         enable = true,
-        disable = { 'python' },
+        disable = { 'python', 'cpp', 'c' },
       },
       highlight = {
         enable = true,

@@ -17,3 +17,16 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = '*',
   command = [[%s/\s\+$//e]],
 })
+vim.api.nvim_create_autocmd('BufNewFile', {
+  pattern = 'CMakeLists.txt',
+  callback = function()
+    local template = vim.fn.stdpath 'config' .. '/templates/cmake_template.cmake'
+    vim.cmd('0r ' .. template)
+
+    local pos = vim.fn.search('ProjectName', 'c')
+    if pos > 0 then
+      -- select the word under cursor
+      vim.cmd 'normal viw'
+    end
+  end,
+})

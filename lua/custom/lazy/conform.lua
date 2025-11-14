@@ -34,6 +34,7 @@ return { -- Autoformat
       c = { 'clang-format' },
       cpp = { 'clang-format' },
       python = { 'isort', 'black' },
+      cmake = { 'cmake-format' },
       -- Conform can also run multiple formatters sequentially
       -- python = { "isort", "black" },
       --
@@ -43,6 +44,27 @@ return { -- Autoformat
     formatters = {
       ['clang-format'] = {
         prepend_args = { '--style=Google' },
+      },
+    },
+    linters_by_ft = {
+      python = { 'ruff' },
+      cmake = {
+        function()
+          return {
+            exe = 'cmakelint',
+            args = { '--quiet' },
+            stdin = false,
+          }
+        end,
+      },
+      cpp = {
+        function()
+          return {
+            exe = 'cpplint',
+            args = { '--filter=-whitespace/line_length' },
+            stdin = false,
+          }
+        end,
       },
     },
   },

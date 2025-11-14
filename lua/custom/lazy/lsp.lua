@@ -33,6 +33,9 @@ return {
         'lua_ls',
         'stylua',
         'clangd',
+        'cmakelang',
+        'cmakelint',
+        'cmake-language-server',
         'pyright',
       },
     }
