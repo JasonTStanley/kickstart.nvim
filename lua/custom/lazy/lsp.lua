@@ -40,62 +40,46 @@ return {
       },
     }
     require('mason-lspconfig').setup {
-      ensure_installed = {},
-      handlers = {
-        function(server_name) -- default handler (optional)
-          require('lspconfig')[server_name].setup {
-            capabilities = capabilities,
-          }
-        end,
-
-        ['lua_ls'] = function()
-          local lspconfig = require 'lspconfig'
-          lspconfig.lua_ls.setup {
-            capabilities = capabilities,
-            settings = {
-              Lua = {
-                diagnostics = {
-                  globals = { 'vim', 'it', 'describe', 'before_each', 'after_each' },
-                },
-              },
-            },
-          }
-        end,
-
-        ['clangd'] = function()
-          local lspconfig = require 'lspconfig'
-          lspconfig.clangd.setup {
-            capabilities = capabilities,
-            cmd = {
-              'clangd',
-              '--query-driver=/usr/bin/c++',
-              '--compile-flag=-std=c++17',
-              '--background-index',
-              '--clang-tidy',
-              '--completion-style=detailed',
-              '--cross-file-rename',
-              '--header-insertion=iwyu',
-            },
-          }
-        end,
-      },
-
-      ['pyright'] = function()
-        local lspconfig = require 'lspconfig'
-        lspconfig.pyright.setup {
-          capabilities = capabilities,
-          python = {
-            analysis = {
-              autoSearchPaths = true,
-              diagonisticMode = 'openFilesOnly',
-              useLibraryCodeForTypes = true,
-              reportDuplicateImport = true,
-            },
-          },
-        }
-      end,
+      ensure_installed = { 'lua_ls', 'clangd', 'pyright' },
     }
 
+    vim.lsp.config('lua_ls', {
+      capabilities = capabilities,
+      settings = {
+        Lua = {
+          diagnostics = {
+            globals = { 'vim', 'it', 'describe', 'before_each', 'after_each' },
+          },
+        },
+      },
+    })
+
+    vim.lsp.config('clangd', {
+      capabilities = capabilities,
+      cmd = {
+        'clangd',
+        '--background-index',
+        '--clang-tidy',
+        '--query-driver=/usr/bin/c++',
+        '--completion-style=detailed',
+        '--header-insertion=iwyu',
+      },
+      filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda' },
+    })
+
+    vim.lsp.config('pyright', {
+      capabilities = capabilities,
+      python = {
+        analysis = {
+          autoSearchPaths = true,
+          diagonisticMode = 'openFilesOnly',
+          useLibraryCodeForTypes = true,
+          reportDuplicateImport = true,
+        },
+      },
+    })
+
+    vim.lsp.enable { 'lua_ls', 'clangd', 'pyright' }
     local cmp_select = { behavior = cmp.SelectBehavior.Select }
 
     cmp.setup {
