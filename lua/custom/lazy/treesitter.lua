@@ -8,6 +8,7 @@ return {
         'c',
         'diff',
         'lua',
+        'cue',
         'luadoc',
         'markdown',
         'markdown_inline',
