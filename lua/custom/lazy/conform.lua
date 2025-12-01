@@ -34,7 +34,8 @@ return { -- Autoformat
       c = { 'clang-format' },
       cpp = { 'clang-format' },
       python = { 'isort', 'black' },
-      cmake = { 'cmake-format' },
+      --cmake = { 'cmake-format' },
+      xml = { 'xmlformat' },
       -- Conform can also run multiple formatters sequentially
       -- python = { "isort", "black" },
       --

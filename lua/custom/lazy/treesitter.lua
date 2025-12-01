@@ -16,6 +16,7 @@ return {
         'vim',
         'vimdoc',
         'python',
+        'xml',
       },
       sync_install = false,
       auto_install = true,
