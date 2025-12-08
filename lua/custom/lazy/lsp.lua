@@ -18,7 +18,13 @@ return {
     local cmp = require 'cmp'
     local cmp_lsp = require 'cmp_nvim_lsp'
     local capabilities = vim.tbl_deep_extend('force', {}, vim.lsp.protocol.make_client_capabilities(), cmp_lsp.default_capabilities())
+    local lsp_util = require 'lspconfig.util'
 
+    -- find the project root based on any of these markers
+    local project_root = lsp_util.root_pattern '.clangd'(vim.loop.cwd()) or vim.loop.cwd()
+    if not project_root then
+      project_root = vim.loop.cwd() -- fallback
+    end
     require('fidget').setup {}
     require('mason').setup()
     require('mason-tool-installer').setup {
@@ -57,6 +63,8 @@ return {
 
     vim.lsp.config('clangd', {
       capabilities = capabilities,
+
+      root_dir = project_root,
       cmd = {
         'clangd',
         '--background-index',
