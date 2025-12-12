@@ -56,8 +56,8 @@ vim.keymap.set('n', 'Q', '<nop>')
 vim.keymap.set({ 'n', 'c' }, '<C-Space>', '<nop>')
 
 --jump to next or prev item on quickfix list
-vim.keymap.set('n', '<C-k>', '<cmd>cnext<CR>zz', { desc = 'Next quickfix' })
-vim.keymap.set('n', '<C-j>', '<cmd>cprev<CR>zz', { desc = 'Prev quickfix' })
+vim.keymap.set('n', '<leader>ek', '<cmd>cnext<CR>zz', { desc = 'Next quickfix' })
+vim.keymap.set('n', '<leader>ej>', '<cmd>cprev<CR>zz', { desc = 'Prev quickfix' })
 
 -- next or prev location in the location list
 vim.keymap.set('n', '<leader>k', '<cmd>lnext<CR>zz', { desc = 'Next location' })
@@ -73,6 +73,8 @@ vim.schedule(function()
   vim.o.clipboard = 'unnamedplus'
 end)
 
+vim.keymap.set('n', '<leader>Q', ':bd<CR>', { desc = '[q]uit buffer (bd)' })
+vim.keymap.set('n', '<leader>q', ':close<CR>', { desc = 'close window' })
 --vim.keymap.set('i', '<C-y>', 'copilot#Accept("<CR")', { expr = true, silent = true })
 --vim.g.copilot_no_tab_map = true
 --vim.g.copilot_assume_mapped = true
@@ -84,3 +86,7 @@ vim.keymap.set('n', '<leader>db', '<cmd>lua require("dap").toggle_breakpoint()<C
 vim.keymap.set('n', '<leader>dc', '<cmd>lua require("dap").continue()<CR>', { desc = '[D]ebugger [C]ontinue' })
 vim.keymap.set('n', '<leader>di', '<cmd>lua require("dap").step_into()<CR>', { desc = '[D]ebugger step [I]nto' })
 vim.keymap.set('n', '<leader>do', '<cmd>lua require("dap").step_over()<CR>', { desc = '[D]ebugger step [O]ver' })
+
+-- CodeCompanion
+
+vim.keymap.set('n', '<leader>aa', '<cmd>CodeCompanionChat Toggle<CR>', { desc = 'Open [C]ode[C]ompanion' })
