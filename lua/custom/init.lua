@@ -30,6 +30,13 @@ vim.api.nvim_create_autocmd('BufNewFile', {
     end
   end,
 })
+vim.api.nvim_create_autocmd('BufNewFile', {
+  pattern = 'Dockerfile',
+  callback = function()
+    local template = vim.fn.stdpath 'config' .. '/templates/dockerfile_template'
+    vim.cmd('0r ' .. template)
+  end,
+})
 vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
   pattern = '*.xml',
   callback = function(args)
