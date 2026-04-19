@@ -36,6 +36,7 @@ return { -- Autoformat
       python = { 'isort', 'black' },
       --cmake = { 'cmake-format' },
       xml = { 'xmlformat' },
+      tex = { 'latexindent' },
       -- Conform can also run multiple formatters sequentially
       -- python = { "isort", "black" },
       --
