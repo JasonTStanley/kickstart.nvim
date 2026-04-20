@@ -2,6 +2,9 @@ require 'custom.set'
 require 'custom.remap'
 require 'custom.lazy_init'
 
+local node_bin = vim.fn.expand '/home/jason/.config/nvm/versions/node/v22.21.1/bin'
+vim.env.PATH = node_bin .. ':' .. vim.env.PATH
+
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
