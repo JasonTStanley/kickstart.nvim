@@ -47,6 +47,9 @@ return { -- Autoformat
       ['clang-format'] = {
         prepend_args = { '--style=Google' },
       },
+      latexindent = {
+        prepend_args = { '-g=/dev/null' },
+      },
     },
     linters_by_ft = {
       python = { 'ruff' },
