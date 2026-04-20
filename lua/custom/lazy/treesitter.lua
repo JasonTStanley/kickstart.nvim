@@ -6,8 +6,24 @@ return {
     require('nvim-treesitter').setup()
 
     require('nvim-treesitter').install {
-      'bash', 'c', 'diff', 'lua', 'cue', 'luadoc',
-      'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'xml',
+      'bash',
+      'c',
+      'diff',
+      'lua',
+      'cue',
+      'luadoc',
+      'markdown',
+      'markdown_inline',
+      'query',
+      'vim',
+      'vimdoc',
+      'python',
+      'xml',
+      'javascript',
+      'typescript',
+      'json',
+      'html',
+      'css',
     }
 
     -- Auto-install parser when opening an unrecognised filetype

@@ -5,6 +5,7 @@ return {
     event = 'InsertEnter',
     config = function()
       require('copilot').setup {
+        copilot_node_command = '/home/jason/.config/nvm/versions/node/v22.21.1/bin/node',
         suggestion = { enabled = false }, -- disable inline suggestions
         panel = { enabled = false }, -- disable side panel
         filetypes = {
@@ -14,6 +15,7 @@ return {
           c = true,
           python = true,
           lua = true,
+          js = true,
         },
       }
     end,

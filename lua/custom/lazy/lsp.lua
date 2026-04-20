@@ -47,7 +47,7 @@ return {
       },
     }
     require('mason-lspconfig').setup {
-      ensure_installed = { 'lua_ls', 'clangd', 'pyright' },
+      ensure_installed = { 'lua_ls', 'clangd', 'pyright', 'ts_ls', 'eslint' },
     }
 
     vim.lsp.config('lua_ls', {
@@ -86,6 +86,15 @@ return {
           reportDuplicateImport = true,
         },
       },
+    })
+
+    vim.lsp.config('ts_ls', {
+      capabilities = capabilities,
+    })
+
+    vim.lsp.config('eslint', {
+      capabilities = capabilities,
+      settinsg = { workingDirectory = { mode = 'auto' } },
     })
 
     vim.lsp.enable { 'lua_ls', 'clangd', 'pyright' }
