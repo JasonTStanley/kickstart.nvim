@@ -93,13 +93,16 @@ local function get_equation_at_cursor()
   if not start_line then
     return nil, nil
   end
-  for i = lnum, total do
+  for i = start_line + 1, total do
     if vim.fn.getline(i):match('\\end{' .. vim.pesc(env_name) .. '}') then
       end_line = i
       break
     end
   end
   if not end_line then
+    return nil, nil
+  end
+  if lnum > end_line then
     return nil, nil
   end
 
@@ -114,9 +117,15 @@ local current_image = nil
 local preview_win = nil
 local preview_buf = nil
 local last_math = nil -- content of last successfully rendered equation
-if vim.b.tex_hover_enabled == nil then vim.b.tex_hover_enabled = true end
+local render_generation = 0
+if vim.b.tex_hover_enabled == nil then vim.b.tex_hover_enabled = false end
 
 local function close_preview()
+  render_generation = render_generation + 1
+  if render_job then
+    pcall(vim.fn.jobstop, render_job)
+    render_job = nil
+  end
   if current_image then
     pcall(function()
       current_image:clear()
@@ -264,6 +273,8 @@ end
 local render_job = nil
 -- force=true bypasses hover_enabled (used by <leader>lv manual trigger)
 local function render_async(math_content, end_lnum)
+  render_generation = render_generation + 1
+  local my_generation = render_generation
   if render_job then
     pcall(vim.fn.jobstop, render_job)
     render_job = nil
@@ -298,6 +309,7 @@ local function render_async(math_content, end_lnum)
     on_exit = function(_, code)
       render_job = nil
       vim.schedule(function()
+        if my_generation ~= render_generation then return end
         if code == 0 then
           last_math = math_content
           show_image_below_line(tmp_png, end_lnum)

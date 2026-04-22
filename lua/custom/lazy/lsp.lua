@@ -44,6 +44,7 @@ return {
         'cmake-language-server',
         'pyright',
         'xmlformatter',
+        'latexindent',
       },
     }
     require('mason-lspconfig').setup {
