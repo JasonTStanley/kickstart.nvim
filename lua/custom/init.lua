@@ -1,9 +1,19 @@
+-- Make luarocks magick rock available to Neovim's LuaJIT
+package.path = package.path
+  .. ';' .. vim.fn.expand('~/.luarocks/share/lua/5.1/?.lua')
+  .. ';' .. vim.fn.expand('~/.luarocks/share/lua/5.1/?/init.lua')
+package.cpath = package.cpath
+  .. ';' .. vim.fn.expand('~/.luarocks/lib/lua/5.1/?.so')
+
 require 'custom.set'
 require 'custom.remap'
 require 'custom.lazy_init'
 
-local node_bin = vim.fn.expand '/home/jason/.config/nvm/versions/node/v22.21.1/bin'
-vim.env.PATH = node_bin .. ':' .. vim.env.PATH
+-- Add mise shims to PATH so node/npm are available to plugins
+local mise_shims = vim.fn.expand '~/.local/share/mise/shims'
+if vim.fn.isdirectory(mise_shims) == 1 then
+  vim.env.PATH = mise_shims .. ':' .. vim.env.PATH
+end
 
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',

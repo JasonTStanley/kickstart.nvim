@@ -18,24 +18,27 @@ return {
 
     local state = { oil_winid = nil, help_winid = nil, preview_winid = nil }
 
+    local open_external_exts = {
+      pdf = true,
+      png = true, jpg = true, jpeg = true, gif = true, webp = true, svg = true,
+      mp4 = true, mov = true, mkv = true, avi = true,
+      mp3 = true, flac = true, wav = true,
+    }
+
     local help_lines = {
-      '  ─── Oil Keys ─────────────────────────────',
-      '  <CR>  open / enter       <C-p>  preview',
-      '  -     parent dir         gd     detail view',
-      '  _     open cwd           g.     hidden files',
-      '  o/O   add line→ create   gs     sort',
-      '  dd    del line → delete  gx     open external',
-      '  edit name → rename       g?     all keymaps',
-      '  :w    apply changes       q     close',
+      '  ─── Oil Keys ───────────',
+      '  <C-p>  toggle preview',
+      '  gd     detail view',
+      '  g.     hidden files',
+      '  gs     sort',
+      '  gx     open external',
+      '  g?     all keymaps',
+      '  q      close',
     }
 
     local function close_help()
       if state.help_winid and vim.api.nvim_win_is_valid(state.help_winid) then
-        if #vim.api.nvim_list_wins() > 1 then
-          vim.api.nvim_win_close(state.help_winid, true)
-        else
-          vim.cmd 'quit'
-        end
+        vim.api.nvim_win_close(state.help_winid, true)
       end
       state.help_winid = nil
     end
@@ -50,17 +53,26 @@ return {
       vim.api.nvim_buf_set_lines(buf, 0, -1, false, help_lines)
       vim.bo[buf].modifiable = false
 
-      vim.api.nvim_win_call(oil_winid, function()
-        vim.cmd('belowright ' .. #help_lines .. 'split')
-        state.help_winid = vim.api.nvim_get_current_win()
-        vim.api.nvim_win_set_buf(state.help_winid, buf)
-        vim.wo[state.help_winid].number = false
-        vim.wo[state.help_winid].relativenumber = false
-        vim.wo[state.help_winid].signcolumn = 'no'
-        vim.wo[state.help_winid].cursorline = false
-        vim.wo[state.help_winid].statusline = ' '
-        vim.wo[state.help_winid].winhl = 'Normal:NormalFloat,EndOfBuffer:NormalFloat'
-      end)
+      local float_w = 0
+      for _, line in ipairs(help_lines) do
+        float_w = math.max(float_w, vim.fn.strdisplaywidth(line))
+      end
+      local float_h = #help_lines
+      local oil_h = vim.api.nvim_win_get_height(oil_winid)
+
+      state.help_winid = vim.api.nvim_open_win(buf, false, {
+        relative = 'win',
+        win = oil_winid,
+        anchor = 'NW',
+        row = math.max(0, oil_h - float_h),
+        col = 0,
+        width = float_w,
+        height = float_h,
+        style = 'minimal',
+        border = 'rounded',
+        focusable = false,
+        zindex = 50,
+      })
     end
 
     -- Open preview and record the new window so <CR> can close it cleanly.
@@ -83,22 +95,40 @@ return {
       default_file_explorer = true,
       columns = { 'icon' },
       keymaps = {
-        ['<C-p>'] = 'actions.preview',
+        ['<C-p>'] = {
+          desc = 'Toggle preview',
+          callback = function()
+            if state.preview_winid and vim.api.nvim_win_is_valid(state.preview_winid) then
+              require('oil.actions').preview.callback()
+              state.preview_winid = nil
+            else
+              open_preview_tracked()
+            end
+          end,
+        },
         ['<C-s>'] = false,
         ['<C-h>'] = false,
-        ['q'] = 'actions.close',
+        ['q'] = {
+          desc = 'Close oil',
+          callback = function()
+            if state.preview_winid and vim.api.nvim_win_is_valid(state.preview_winid) then
+              vim.api.nvim_win_close(state.preview_winid, true)
+              state.preview_winid = nil
+            end
+            close_help()
+            oil.close()
+          end,
+        },
         ['<CR>'] = {
           desc = 'Open file',
           callback = function()
             local entry = oil.get_cursor_entry()
             if not entry then return end
-            -- Close the preview window before opening a file. Without this, oil
-            -- promotes the preview window (which holds all previewed files in its
-            -- jumplist) as the destination, causing <C-o> to land on previewed files.
             if entry.type ~= 'directory' then
-              if state.preview_winid and vim.api.nvim_win_is_valid(state.preview_winid) then
-                vim.api.nvim_win_close(state.preview_winid, true)
-                state.preview_winid = nil
+              local ext = entry.name:match('%.([^.]+)$')
+              if ext and open_external_exts[ext:lower()] then
+                require('oil.actions').open_external.callback()
+                return
               end
             end
             oil.select()
@@ -116,7 +146,7 @@ return {
           end,
         },
       },
-      view_options = { show_hidden = true },
+      view_options = { show_hidden = false },
       watch_for_changes = true,
       preview_win = {
         update_on_cursor_moved = true,
@@ -128,28 +158,12 @@ return {
       },
     }
 
-    local _oil_entering = false
-
     vim.api.nvim_create_autocmd('BufEnter', {
       pattern = 'oil://*',
       callback = function()
-        if _oil_entering then return end
-        _oil_entering = true
-
         local winid = vim.api.nvim_get_current_win()
         state.oil_winid = winid
         open_help(winid)
-
-        vim.defer_fn(function()
-          if vim.api.nvim_win_is_valid(winid) and oil.get_cursor_entry() then
-            open_preview_tracked()
-          end
-          -- Reset only after oil.open_preview's internal focus-restore has fired,
-          -- otherwise the restore triggers this callback again and loops.
-          vim.defer_fn(function()
-            _oil_entering = false
-          end, 250)
-        end, 100)
       end,
     })
 
@@ -176,8 +190,12 @@ return {
       callback = function(ev)
         local closed = tonumber(ev.match)
         if closed == state.oil_winid then
-          vim.defer_fn(close_help, 10)
           state.oil_winid = nil
+          if state.preview_winid and vim.api.nvim_win_is_valid(state.preview_winid) then
+            vim.api.nvim_win_close(state.preview_winid, true)
+            state.preview_winid = nil
+          end
+          vim.defer_fn(close_help, 10)
         elseif closed == state.help_winid then
           state.help_winid = nil
         elseif closed == state.preview_winid then

@@ -148,7 +148,6 @@ local tmp_dir = vim.fn.stdpath 'cache' .. '/tex_preview'
 vim.fn.mkdir(tmp_dir, 'p')
 local tmp_tex = tmp_dir .. '/preview.tex'
 local tmp_pdf = tmp_dir .. '/preview.pdf'
-local tmp_png = tmp_dir .. '/preview.png'
 
 local function build_tex(math_content)
   local macro_block = ''
@@ -287,13 +286,17 @@ local function render_async(math_content, end_lnum)
 
   vim.notify('LaTeX preview: rendering...', vim.log.levels.INFO)
 
+  local png_base = 'preview_' .. my_generation
+  local png_path = tmp_dir .. '/' .. png_base .. '.png'
+
   local stderr_lines = {}
   render_job = vim.fn.jobstart({
     'sh',
     '-c',
     string.format(
-      'cd %s && pdflatex -interaction=nonstopmode -halt-on-error preview.tex > /dev/null && ' .. 'pdftoppm -r 400 -png -singlefile preview.pdf preview',
-      vim.fn.shellescape(tmp_dir)
+      'cd %s && pdflatex -interaction=nonstopmode -halt-on-error preview.tex > /dev/null && ' .. 'pdftoppm -r 400 -png -singlefile preview.pdf %s',
+      vim.fn.shellescape(tmp_dir),
+      png_base
     ),
   }, {
     stderr_buffered = true,
@@ -312,7 +315,7 @@ local function render_async(math_content, end_lnum)
         if my_generation ~= render_generation then return end
         if code == 0 then
           last_math = math_content
-          show_image_below_line(tmp_png, end_lnum)
+          show_image_below_line(png_path, end_lnum)
         else
           vim.notify('LaTeX preview failed (code ' .. code .. '):\n' .. table.concat(stderr_lines, '\n'), vim.log.levels.ERROR)
         end
