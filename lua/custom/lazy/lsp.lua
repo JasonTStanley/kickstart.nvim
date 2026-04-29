@@ -41,7 +41,7 @@ return {
         'clangd',
         'cmakelang',
         'cmakelint',
-	'cmake-language-server',
+        --'cmake-language-server', on arch install separately because python3.14 doesnt support this
         'basedpyright',
         'xmlformatter',
         'latexindent',
@@ -82,15 +82,15 @@ return {
       settings = {
         basedpyright = {
           analysis = {
-            autoSearchPaths        = true,
-            diagnosticMode         = 'workspace',
+            autoSearchPaths = true,
+            diagnosticMode = 'workspace',
             useLibraryCodeForTypes = true,
-            typeCheckingMode       = 'basic',
+            typeCheckingMode = 'basic',
             inlayHints = {
-              variableTypes       = true,
+              variableTypes = true,
               functionReturnTypes = true,
-              parameterTypes      = true,
-              callArgumentNames   = true,
+              parameterTypes = true,
+              callArgumentNames = true,
             },
           },
         },
