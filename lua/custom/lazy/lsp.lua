@@ -41,13 +41,13 @@ return {
         'clangd',
         'cmakelang',
         'cmakelint',
-        'pyright',
+        'basedpyright',
         'xmlformatter',
         'latexindent',
       },
     }
     require('mason-lspconfig').setup {
-      ensure_installed = { 'lua_ls', 'clangd', 'pyright', 'ts_ls', 'eslint' },
+      ensure_installed = { 'lua_ls', 'clangd', 'basedpyright', 'ts_ls', 'eslint' },
     }
 
     vim.lsp.config('lua_ls', {
@@ -76,14 +76,22 @@ return {
       filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda' },
     })
 
-    vim.lsp.config('pyright', {
+    vim.lsp.config('basedpyright', {
       capabilities = capabilities,
-      python = {
-        analysis = {
-          autoSearchPaths = true,
-          diagonisticMode = 'openFilesOnly',
-          useLibraryCodeForTypes = true,
-          reportDuplicateImport = true,
+      settings = {
+        basedpyright = {
+          analysis = {
+            autoSearchPaths        = true,
+            diagnosticMode         = 'workspace',
+            useLibraryCodeForTypes = true,
+            typeCheckingMode       = 'basic',
+            inlayHints = {
+              variableTypes       = true,
+              functionReturnTypes = true,
+              parameterTypes      = true,
+              callArgumentNames   = true,
+            },
+          },
         },
       },
     })
@@ -97,7 +105,7 @@ return {
       settinsg = { workingDirectory = { mode = 'auto' } },
     })
 
-    vim.lsp.enable { 'lua_ls', 'clangd', 'pyright' }
+    vim.lsp.enable { 'lua_ls', 'clangd', 'basedpyright' }
     local cmp_select = { behavior = cmp.SelectBehavior.Select }
 
     cmp.setup {
@@ -247,6 +255,7 @@ return {
         --
         -- This may be unwanted, since they displace some of your code
         if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
+          vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
           map('<leader>th', function()
             vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
           end, '[T]oggle Inlay [H]ints')
