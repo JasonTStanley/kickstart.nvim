@@ -41,6 +41,7 @@ return {
         end
       end,
     })
+
     -- Treesitter indent (skip filetypes where it is unreliable)
     local indent_disabled = { python = true, cpp = true, c = true }
     vim.api.nvim_create_autocmd('FileType', {
