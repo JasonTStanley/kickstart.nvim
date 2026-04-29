@@ -26,11 +26,17 @@ return {
       'css',
     }
 
+    local unsupported_langs = {
+      oil = true,
+      TelescopeResults = true,
+      TelescopePrompt = true,
+    }
+
     -- Auto-install parser when opening an unrecognised filetype
     vim.api.nvim_create_autocmd('FileType', {
       callback = function()
         local lang = vim.treesitter.language.get_lang(vim.bo.filetype)
-        if lang then
+        if lang and not unsupported_langs[lang] then
           pcall(require('nvim-treesitter').install, { lang })
         end
       end,

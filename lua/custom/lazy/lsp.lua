@@ -41,6 +41,7 @@ return {
         'clangd',
         'cmakelang',
         'cmakelint',
+	'cmake-language-server',
         'basedpyright',
         'xmlformatter',
         'latexindent',
