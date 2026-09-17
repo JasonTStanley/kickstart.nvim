@@ -4,4 +4,8 @@ test.sh
 nvim
 
 spell/
-lazy-lock.json
+
+# lazy-lock.json is deliberately NOT ignored. Upstream kickstart ignores it
+# because it is a template repo meant to diverge per user. This is a personal
+# fork shared by three machines, so the lockfile is what keeps their plugin
+# versions identical -- without it each machine resolves plugins on its own.
