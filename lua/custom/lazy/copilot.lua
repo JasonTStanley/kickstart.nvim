@@ -5,7 +5,7 @@ return {
     event = 'InsertEnter',
     config = function()
       require('copilot').setup {
-        copilot_node_command = vim.fn.expand('~/.local/share/mise/installs/node/25.9.0/bin/node'),
+        copilot_node_command = vim.fn.expand('~/.local/share/mise/shims/node'),
         suggestion = { enabled = false }, -- disable inline suggestions
         panel = { enabled = false }, -- disable side panel
         filetypes = {
